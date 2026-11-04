@@ -1,30 +1,26 @@
 # Graphing Calculator
 
-Ok so this is a command-line calculator and polynomial grapher written in Python, and here's the cool part: basically ALL the math is done from scratch. No `math` module. Sine and cosine? Taylor series. Natural log? Series expansion. Pi? Leibniz series. The only thing imported is `matplotlib`, and that's just to actually draw the graphs, because I'm not writing a rendering engine in a terminal.
+A command-line calculator and polynomial grapher written in Python, done from scratch without any math libraries. `matplotlib` is used for Graphing. Type `options` into the prompt to get a list of more things to do, and type `options [option]` to access the purpose of an option.
 
 ## What it does
 
-- **Interactive CLI** with three modes: the main prompt, a `calc` mode for doing math, and a `graph` mode for plotting polynomials
-- **Hand-rolled math**, as in:
-  - sin and cos built from Taylor series
-  - ln from a series expansion
-  - polynomial evaluation using synthetic division (yes, the thing from algebra class, it's secretly Horner's method and it's awesome)
-- **Actual calculus**: polynomial derivatives and Riemann sums
-- **Variable storage**: save results to one-letter variables like a real TI calculator
-- **Graphing**: plot any polynomial with custom labels, a title, and point-filtering conditions, saved as a PNG
+- **Interactive CLI** with three modes: the main prompt, `calc` mode for doing math, and `graph` mode for plotting polynomials
+- sin and cos built from Taylor series
+- ln from a series expansion
+- Polynomial evaluation using synthetic division (yes, the thing from algebra class, it's secretly Horner's method and it's awesome)
+- Permits Polynomial derivatives and Riemann sums
+- **Variable storage**: Allows storing variables like a real TI calculator
+- **Graphing**: Plot polynomial with custom labels, title, and point-filtering conditions, saved as PNG
 
-## Getting started
+Additionally, the python shell can be used normally when the program is running, since it runs the code by using the exec() command.
 
-You need Python 3 and matplotlib. That's literally it.
 
 ```bash
 pip install matplotlib
 python GraphingC.py
 ```
 
-Heads up: when the program starts it prints two giant lists of Taylor series coefficients before the prompt appears. That's leftover test output at the bottom of `GraphMathModule.py`, not a crash. Just scroll past it, the `<<<` prompt is down there.
-
-Type `options` at the main prompt to see what you can do.
+When the program starts it prints two giant lists of Taylor series coefficients before the prompt appears. Leftover output from `GraphMathModule.py`, not a crash. Just scroll past it, the `<<<` prompt is down there.
 
 ## How polynomials work here
 
@@ -69,21 +65,21 @@ Bonus: anything else you type in calc mode just gets evaluated as regular arithm
 
 ### Graph mode
 
-Graph mode walks you through some prompts:
+Graph mode uses the following inputs to get the output graph:
 
 1. **Interval for dx**: spacing between plotted points (smaller = smoother)
-2. **Span of graph**: how far along the x-axis to go. Points are plotted from x = dx up to x = span, so positive x values only
+2. **Span of graph**: how far along the x-axis to go. Points are plotted from x = dx up to x = span
 3. **Number of ticks on the x-axis**: asked for, but not currently applied to the plot
 4. **Graphed polynomial**: in list form (see above)
 5. **Filename**: your graph gets saved as a PNG in the current folder
 6. **Axis labels and title**
 7. **Graph condition(s)**: a filter written in terms of `x` and `y`, like `y > 0`, so only matching points get plotted. This one is NOT optional. Leaving it blank throws a syntax error, so if you just want the whole graph, type something always true like `1==1`
 
-Graphing only handles polynomials (so no vertical asymptotes, sorry rational functions).
+Graphing only handles polynomials (no vertical asymptotes).
 
 ## Known issues
 
-Being honest with you, a few things listed in the in-app options don't currently work:
+A few things listed in the in-app options don't currently work:
 
 - `lim` errors out when used in its documented format, and passing `inf` or `-inf` crashes the program
 - `arccos`, `e`, and `pi` show up in the calc options list but have no command wired up, so they just give an OptionError

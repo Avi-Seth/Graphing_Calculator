@@ -79,13 +79,33 @@ Graphing only handles polynomials (no vertical asymptotes).
 
 ## Known issues
 
-A few things listed in the in-app options don't currently work:
+## Known issues
+
+A few things listed in the in-app options don't currently work. The causes below were found when reviewing the 2023 code later. Line numbers refer to the files in this repo.
 
 - `lim` errors out when used in its documented format, and passing `inf` or `-inf` crashes the program
+  - `GraphingC.py` line 222 passes the inputs in the order they're typed (`VAL POLY1 POLY2`), but `lim()` is defined as `lim(poly1, poly2, app, dr)` (`GraphMathModule.py` line 70). So `poly1` gets a number, and `len(poly1)` on line 75 fails
+  - `eval('inf')` on line 222 raises a `NameError`. The `except` lines (231-238) don't catch `NameError`, so the whole program stops
+  - Even with the inputs in the right order, `lim()` gets most answers wrong. Line 75 checks `(app == 'inf' or '-inf')`, which is always true because a non-empty string counts as true, so it returns 0 even at ordinary points (x/x^2 as x approaches 3 gives 0, not 1/3). Lines 81-91 return plus or minus infinity whenever the denominator is 0, without checking whether the numerator is also 0 ((x^2-4)/(x-2) as x approaches 2 gives `-inf`, not 4). Lines 92-95 take derivatives until both polynomials are constants, which isn't how L'Hôpital's rule works and can end in a division by zero
 - `arccos`, `e`, and `pi` show up in the calc options list but have no command wired up, so they just give an OptionError
+  - There's no `elif` for them in calc mode, so they fall through to the arithmetic fallback (lines 291-302). The `e()` and `pi()` functions in `GraphMathModule.py` do work; nothing calls them. (`pi()` uses the Leibniz series, which converges slowly)
+  - `arccos()` itself (`GraphMathModule.py` lines 51-56) has three bugs: it never returns anything, line 55 uses `0.5**i` where the series needs (1/2)(3/2)(5/2)... so every term from x^5 on is wrong, and the constant term pi/2 is missing
 - `options COMMAND` inside calc mode crashes for calc-only commands like `options synDiv` (it works fine at the main prompt)
+  - Line 77 looks the command up in the main prompt's list (`options1.index`) instead of `optionscalc`. Calc-only commands aren't in that list, so it raises a `ValueError`, and `options exit` in calc mode shows synDiv's help instead
+  - The help list `descalc` (lines 20-31) has 11 entries for 16 commands. There's no help for `arccos`, `ln`, `e` or `pi`, and a missing comma at the end of line 28 makes Python join the `polyDeriv` and `lim` help into one string. So fixing line 77 alone would still show the wrong help from `arccos` onward
 - Storing variables with `storemode` works, but recalling a stored function result by typing its name can crash the program. Stored plain-arithmetic results recall fine
-- The startup coefficient dump mentioned in Getting Started
+  - Each result is saved as a text recipe that line 70 runs with `eval()` on recall, and most recipes are broken. They call `function.` but the module is imported as `mathfunction` (line 2), the `fac` recipe has no module name at all, the `rieSum` recipe (line 251) is missing a closing bracket, and the `ln` recipe (line 276) re-reads `prompt`, which by then holds the new input. A recipe like `2+2` is valid Python, which is why arithmetic recalls fine
+- The startup coefficient dump mentioned above
+  - The test `print` lines at the bottom of `GraphMathModule.py` (lines 124-126) run every time `GraphingC.py` imports the module (line 2). Wrapping them in `if __name__ == "__main__":` would stop it
+
+### Other bugs found later
+
+- `ln` returns 0 for small inputs like `ln 0.05 10`, because its loop (`GraphMathModule.py` line 106) runs `int(TERMS*NUM)` times, which rounds down to 0. `ln -1 10` crashes with a division by zero on line 105
+- `rieSum` with a `DX` of 0 (`GraphMathModule.py` line 99), or graph mode with a dx of 0 (`GraphingC.py` lines 346-347), crashes with a division by zero
+- Graphing twice in one session draws the earlier curve onto the new image too, because the plot is never cleared between graphs (line 354)
+- After `delete a`, typing `a` still prints the old value. Lines 104-105 remove the name from the stored lists but not the Python variable `exec()` created, so the arithmetic fallback still finds it
+- A stored variable named `i`, `p` or `r` can be overwritten or lost, because graph mode uses `p` (line 321) and `i` (line 338), and `delete` uses `r` (line 104)
+
 
 ## Project structure
 

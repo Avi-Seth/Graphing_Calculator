@@ -79,8 +79,6 @@ Graphing only handles polynomials (no vertical asymptotes).
 
 ## Known issues
 
-## Known issues
-
 A few things listed in the in-app options don't currently work. The causes below were found when reviewing the 2023 code later. Line numbers refer to the files in this repo.
 
 - `lim` errors out when used in its documented format, and passing `inf` or `-inf` crashes the program

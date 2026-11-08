@@ -2,6 +2,10 @@
 
 A command-line calculator and polynomial grapher written in Python, done from scratch without any math libraries. `matplotlib` is used for Graphing. Type `options` into the prompt to get a list of more things to do, and type `options [option]` to access the purpose of an option.
 
+## Contributions and AI use
+
+I wrote all the code in this repository (GraphingC.py and GraphMathModule.py) myself, without AI assistance. This README was drafted with help from Claude Opus (Anthropic)] and edited by me.
+
 ## What it does
 
 - **Interactive CLI** with three modes: the main prompt, `calc` mode for doing math, and `graph` mode for plotting polynomials
